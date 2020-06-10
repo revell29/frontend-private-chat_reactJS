@@ -5,6 +5,8 @@ import axios from "axios";
 
 export default function Register() {
     const [data, setData] = useState({});
+    const [auth, isAuth] = useState(false);
+    const [errMessage, setMessage] = useState("");
 
     var submit = async (e) => {
         e.preventDefault();
@@ -15,14 +17,24 @@ export default function Register() {
                 password: data.password,
             })
             .then((response) => {
-                console.log(response.data);
+                isAuth(true);
+                setMessage(response.data.message);
             })
-            .catch((error) => console.log(error));
+            .catch((error) => {
+                let Err = error.response.data.status;
+                if (Err === 401) {
+                    isAuth(true);
+                    setMessage(error.response.data.message);
+                    console.log(error);
+                }
+            });
     };
 
     return (
         <div className="h-screen">
             <div className="flex flex-col justify-center h-screen items-center">
+                {auth ? <div className={`bg-green-700 text-white rounded w-full sm:w-6/12 md:w-2/5 lg:w-4/12 xl:w-1/4 p-4`}>{errMessage}</div> : null}
+
                 <form className="bg-white rounded px-8 pt-6 pb-8 mb-4 w-full sm:w-6/12 md:w-2/5 lg:w-4/12 xl:w-1/4" onSubmit={(e) => submit(e)}>
                     <div className="mb-4">
                         <label className="block text-gray-700 text-sm font-bold mb-2">Username</label>

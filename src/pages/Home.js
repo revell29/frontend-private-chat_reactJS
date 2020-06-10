@@ -39,10 +39,9 @@ export default function Home(props) {
                 rid: roomId,
             })
             .then((response) => {
-                // if (response.data.data.length > 0) {
-                setDataMessages(response.data.data);
-                console.log(response.data.data);
-                // }
+                if (response.data.data.length > 0) {
+                    setDataMessages(response.data.data);
+                }
             });
     };
 
@@ -54,9 +53,13 @@ export default function Home(props) {
                 rid: roomId,
             })
             .then((response) => {
-                setDataMessages(response.data.messages);
-                setRoom(response.data._id);
-                socket.emit("join", response.data._id);
+                if (response.data.messages) {
+                    setDataMessages(response.data.messages);
+                    setRoom(response.data._id);
+                    socket.emit("join", response.data._id);
+                } else {
+                    setDataMessages([]);
+                }
             });
     };
 

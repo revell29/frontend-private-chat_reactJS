@@ -26,18 +26,14 @@ export default function Home(props) {
     const [openedChat, setOpenedChat] = useState(false);
 
     const getUser = async (username) => {
-        axios.get(`http://localhost:3000/api/users/${username}`).then((response) => {
+        axios.get(`${process.env.REACT_APP_API_URL}/users/${username}`).then((response) => {
             setDataUser(response.data.data);
         });
     };
 
-    const getListChat = async () => {
-        await axios.get();
-    };
-
     const getMessage = async (from, to) => {
         await axios
-            .post(`http://localhost:3000/api/room/data/${roomId}`, {
+            .post(`${process.env.REACT_APP_API_URL}/room/data/${roomId}`, {
                 from: from,
                 to: to,
                 rid: roomId,
@@ -52,7 +48,7 @@ export default function Home(props) {
 
     const craeteRoom = async (from, to) => {
         await axios
-            .post("http://localhost:3000/api/room", {
+            .post(`${process.env.REACT_APP_API_URL}/room`, {
                 from: from,
                 to: to,
                 rid: roomId,
@@ -70,7 +66,7 @@ export default function Home(props) {
         setName(dataStorage2.data.username);
         setUserId(dataStorage2.data._id);
         getUser(dataStorage2.data.username);
-        socket = SocketIo.connect("http://localhost:3000", {
+        socket = SocketIo.connect(`${process.env.REACT_APP_SOCKET_URL}`, {
             query: {
                 username: dataStorage2.data.username,
             },
@@ -108,7 +104,7 @@ export default function Home(props) {
             if (!event.nativeEvent.shiftKey) {
                 if (message) {
                     await axios
-                        .post("http://localhost:3000/api/message", {
+                        .post(`${process.env.REACT_APP_API_URL}/message`, {
                             from: name,
                             to: receivedUser,
                             message: message,

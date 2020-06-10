@@ -10,7 +10,7 @@ export default function Register() {
         e.preventDefault();
         console.log("test");
         await axios
-            .post("http://localhost:3000/api/auth/register", {
+            .post(`${process.env.REACT_APP_API_URL}/auth/register`, {
                 username: data.username,
                 password: data.password,
             })

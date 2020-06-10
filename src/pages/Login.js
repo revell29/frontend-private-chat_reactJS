@@ -12,7 +12,7 @@ function Login() {
         e.preventDefault();
         console.log("test");
         await axios
-            .post("http://localhost:3000/api/auth/login", {
+            .post(`${process.env.REACT_APP_API_URL}/auth/login`, {
                 username: data.username,
                 password: data.password,
             })

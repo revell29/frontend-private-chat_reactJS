@@ -10,7 +10,7 @@ const ChatBox = ({ messages, name }) => {
                 <div className="pb-2">
                     {messages.map((message, i) => (
                         <div key={i}>
-                            <BoxMessage message={message} name={name} />
+                            <BoxMessage message={message} name={name} number={i} />
                         </div>
                     ))}
                 </div>

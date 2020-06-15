@@ -24,7 +24,7 @@ function Login() {
         console.log(response.data);
       })
       .catch((error) => {
-        let Err = error.response.data.status;
+        let Err = error.response;
         if (Err === 401) {
           isAuth(true);
           setMessage(error.response.data.message);

@@ -4,7 +4,7 @@ const initialState = {
   url: "",
   text: "",
   isLogin: false,
-  user: user.data,
+  user: user ? user.data : {},
 };
 
 const reducer = (state = initialState, action) => {

@@ -14,4 +14,18 @@ const loginUser = (data) => {
   };
 };
 
-export { showImage, loginUser };
+const switchConversation = (userId, roomId) => {
+  return {
+    type: "SWITCH_CHAT",
+    payload: { user_id: userId, room: roomId },
+  };
+};
+
+const saveMessage = (data) => {
+  return {
+    type: "SAVE_MESSAGE",
+    payload: data,
+  };
+};
+
+export { showImage, loginUser, switchConversation, saveMessage };

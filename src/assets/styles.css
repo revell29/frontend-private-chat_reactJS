@@ -1,0 +1,17 @@
+.user-list::-webkit-scrollbar {
+    width: 6px !important;
+    height: 6px !important;
+}
+
+.user-list::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, .2);
+}
+
+html::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, .2);
+}
+
+html::-webkit-scrollbar {
+    width: 6px !important;
+    height: 6px !important;
+}

@@ -1,10 +1,10 @@
+/* eslint-disable array-callback-return */
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/style-prop-object */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { getStorage } from "../utils/helpers";
 import SocketIo from "socket.io-client";
 import ChatBox from "../components/Home/ChatBox";
 import DefaultChat from "../assets/DefaultChat.svg";
@@ -15,9 +15,10 @@ import UploadFile from "../components/Home/UploadFile";
 import ModalImage from "../components/Home/ModalImage";
 import UserList from "../components/Home/UserList";
 import { useSelector, useDispatch } from "react-redux";
-import { showImage } from "../redux/action";
+import { showImage, switchConversation, saveMessage } from "../redux/action";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { getUserList } from "../utils/service";
+import BeatLoader from "react-spinners/BeatLoader";
 
 let socket;
 
@@ -25,7 +26,6 @@ export default function Home(props) {
   const [dataUser, setDataUser] = useState([]);
   const name = useSelector((state) => state.user.username);
   const [selectedUser, setSelectUser] = useState("");
-  const [data, setData] = useState({});
   const [message, setMessage] = useState("");
   const [dataMessages, setDataMessages] = useState([]);
   const [roomId, setRoom] = useState("");
@@ -37,8 +37,12 @@ export default function Home(props) {
   const [fileSeleted, setFile] = useState("");
   const openImage = useSelector((state) => state.openModal);
   const files = useSelector((state) => state);
+  const roomChat = useSelector((state) => state.room_chat);
+  const stateMessage = useSelector((state) => state.message);
   const dispatch = useDispatch();
   const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   async function createRoom(from, to) {
     await dispatch(showImage(false));
@@ -56,6 +60,8 @@ export default function Home(props) {
         }
         setRoom(response.data._id);
         socket.emit("join", response.data._id);
+        dispatch(switchConversation(to, response.data._id));
+        dispatch(saveMessage(response.data.messages));
       });
   }
 
@@ -75,15 +81,30 @@ export default function Home(props) {
     setOpenedChat(true);
     setActiveIndex(key);
     setReceivedUser(username);
-    createRoom(userId, id);
+    const checkUser = roomChat.find((i) => i.user_id === id);
+    if (!checkUser) {
+      createRoom(userId, id);
+    } else {
+      setRoom(checkUser.room);
+      const dataMessage = [];
+      stateMessage.map((i) => {
+        if (i.from === name && i.to === username) {
+          dataMessage.push(i);
+        }
+      });
+      socket.emit("join", checkUser.room);
+      setDataMessages(dataMessage);
+    }
   }
 
-  async function getUser() {
+  function getUser() {
     setPage(page + 1);
-    await getUserList(name, page)
+    setLoading(true);
+    getUserList(name, page)
       .then((response) => {
         setTimeout(() => {
           setDataUser(dataUser.concat(response));
+          setLoading(false);
         }, 400);
       })
       .catch((error) => console.log(error));
@@ -97,14 +118,58 @@ export default function Home(props) {
     }
   }
 
+  async function postMessage(data) {
+    const formData = new FormData();
+    formData.append("from", data.from);
+    formData.append("to", data.to);
+    formData.append("message", data.message);
+    formData.append("author", data.author);
+    formData.append("rid", data.roomId);
+    formData.append("files", fileSeleted);
+    await axios
+      .post(`${process.env.REACT_APP_API_URL}/message`, formData, {
+        onUploadProgress: function (progressEvent) {
+          let percentCompleted = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          setProgress(percentCompleted);
+        },
+      })
+      .then((response) => {
+        dispatch(saveMessage(response.data.data));
+        setTimeout(() => {
+          setMessage("");
+          setOpenFile(false);
+          setFile("");
+          setProgress(0);
+          setLoading(false);
+          socket.emit("send message", {
+            from: response.data.data.from,
+            to: response.data.data.to,
+            message: response.data.data.message,
+            author: response.data.data.author,
+            rid: response.data.data.rid,
+            files: response.data.data.files,
+          });
+          socket.emit("received", {
+            from: response.data.data.from,
+            to: response.data.data.to,
+            message: response.data.data.message,
+            author: response.data.data.author,
+            rid: response.data.data.rid,
+            files: response.data.data.files,
+          });
+        }, 100);
+      });
+  }
+
   useEffect(() => {
     async function init() {
       setUserId(files.user._id);
       await getUser();
     }
-
     init();
-  }, [name, userId]);
+  }, []);
 
   useEffect(() => {
     socket = SocketIo.connect(`${process.env.REACT_APP_SOCKET_URL}`, {
@@ -124,44 +189,30 @@ export default function Home(props) {
     socket.on("received", (data) => {
       setDataMessages((dataMessages) => [...dataMessages, data]);
     });
+
+    return () => {
+      setProgress(0);
+    };
   }, []);
 
   async function sendMessage(event) {
     if (message) {
-      const formData = new FormData();
-
-      formData.append("from", name);
-      formData.append("to", receivedUser);
-      formData.append("message", message);
-      formData.append("author", userId);
-      formData.append("rid", roomId);
-      formData.append("files", fileSeleted);
-
-      await axios
-        .post(`${process.env.REACT_APP_API_URL}/message`, formData)
-        .then((response) => {
-          setTimeout(() => {
-            setMessage("");
-            setOpenFile(false);
-            setFile("");
-            socket.emit("send message", {
-              from: name,
-              to: receivedUser,
-              message: message,
-              author: userId,
-              rid: roomId,
-              files: response.data.data.files,
-            });
-            socket.emit("received", {
-              from: name,
-              to: receivedUser,
-              message: message,
-              author: userId,
-              rid: roomId,
-              files: response.data.data.files,
-            });
-          }, 100);
-        });
+      setLoading(true);
+      let data = {
+        from: name,
+        to: receivedUser,
+        message: message,
+        author: userId,
+        roomId: null,
+      };
+      const checkUser = roomChat.find((i) => i.user_id === selectedUser);
+      if (!checkUser) {
+        data.roomId = roomId;
+        postMessage(data);
+      } else {
+        data.roomId = checkUser.room;
+        postMessage(data);
+      }
     }
   }
 
@@ -171,7 +222,7 @@ export default function Home(props) {
       <div className="flex h-screen pt-16">
         <div
           id="userList"
-          className="w-2/5 bg-white border-r border-b h-full"
+          className="w-2/5 bg-white border-r border-b h-full user-list"
           style={{ overflow: "auto" }}
         >
           <InfiniteScroll
@@ -179,7 +230,11 @@ export default function Home(props) {
             next={getUser}
             scrollableTarget="userList"
             hasMore={true}
-            loader={<h4>Loading...</h4>}
+            loader={
+              <div className="w-full flex justify-center items-center p-5">
+                <BeatLoader size={14} color={"#123abc"} loading={loading} />
+              </div>
+            }
           >
             {dataUser.map((item, key) => (
               <UserList
@@ -193,7 +248,7 @@ export default function Home(props) {
           </InfiniteScroll>
         </div>
         {openedChat ? (
-          <div className="mx-auto w-full relative bg-white">
+          <div className="mx-auto w-full relative bg-white chat-box">
             <ModalImage dataFile={files} openImage={openImage} />
             <ChatBox messages={dataMessages} name={name} />
             <div
@@ -209,7 +264,12 @@ export default function Home(props) {
                 >
                   <img src={Attach} className="h-5 w-5" />
                 </button>
-                <UploadFile active={openFile} selectFile={handleFile} />
+                <UploadFile
+                  active={openFile}
+                  selectFile={handleFile}
+                  progress={progress}
+                  loading={loading}
+                />
                 <input
                   type="text"
                   onKeyPress={typing}
@@ -224,7 +284,7 @@ export default function Home(props) {
           </div>
         ) : (
           <div className="flex flex-col mx-auto w-full relative bg-white h-full items-center justify-center">
-            <div className="bg-red-500 rounded-full p-10 h-auto flex items-center justify-center">
+            <div className="bg-blue-500 rounded-full p-10 h-auto flex items-center justify-center">
               <img src={DefaultChat} className="h-20 w-20" />
             </div>
             <h2 className="text-2xl text-gray-700 mt-5">

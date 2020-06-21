@@ -88,10 +88,14 @@ export default function Home(props) {
       setRoom(checkUser.room);
       const dataMessage = [];
       stateMessage.map((i) => {
-        if (i.from === name && i.to === username) {
+        if (
+          (i.from === name && i.to === username) ||
+          (i.from === username && i.to === name)
+        ) {
           dataMessage.push(i);
         }
       });
+      console.log(dataMessage);
       socket.emit("join", checkUser.room);
       setDataMessages(dataMessage);
     }
@@ -184,6 +188,7 @@ export default function Home(props) {
     socket.on("new message", (data) => {
       WebNotif(data.from, data.message);
       setDataMessages((dataMessages) => [...dataMessages, data]);
+      dispatch(saveMessage(data));
     });
 
     socket.on("received", (data) => {

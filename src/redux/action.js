@@ -28,4 +28,11 @@ const saveMessage = (data) => {
   };
 };
 
-export { showImage, loginUser, switchConversation, saveMessage };
+const hideListUser = (data) => {
+  return {
+    type: "HIDE_LIST_CHAT",
+    payload: data,
+  };
+};
+
+export { showImage, loginUser, switchConversation, saveMessage, hideListUser };

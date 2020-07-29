@@ -43,6 +43,7 @@ export default function Home(props) {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [visibleList, setVisibleList] = useState(true);
 
   async function createRoom(from, to) {
     await dispatch(showImage(false));
@@ -56,7 +57,8 @@ export default function Home(props) {
         if (response.data.messages) {
           setDataMessages(response.data.messages);
         } else {
-          setDataMessages([]);
+          response.data.messages = [];
+          setDataMessages(response.data.messages);
         }
         setRoom(response.data._id);
         socket.emit("join", response.data._id);
@@ -75,6 +77,7 @@ export default function Home(props) {
       user: userId,
       rid: roomId,
     });
+    setVisibleList(false);
     setRoom("");
     setSelectUser(id);
     setOpenFile(false);
@@ -87,15 +90,17 @@ export default function Home(props) {
     } else {
       setRoom(checkUser.room);
       const dataMessage = [];
-      stateMessage.map((i) => {
-        if (
-          (i.from === name && i.to === username) ||
-          (i.from === username && i.to === name)
-        ) {
-          dataMessage.push(i);
-        }
-      });
-      console.log(dataMessage);
+      if (stateMessage) {
+        stateMessage.map((i) => {
+          if (
+            (i.from === name && i.to === username) ||
+            (i.from === username && i.to === name)
+          ) {
+            dataMessage.push(i);
+          }
+        });
+        console.log(dataMessage);
+      }
       socket.emit("join", checkUser.room);
       setDataMessages(dataMessage);
     }
@@ -118,6 +123,7 @@ export default function Home(props) {
     if (event.key === "Enter") {
       if (!event.nativeEvent.shiftKey) {
         sendMessage(event);
+        console.log("send message");
       }
     }
   }
@@ -140,7 +146,7 @@ export default function Home(props) {
         },
       })
       .then((response) => {
-        dispatch(saveMessage(response.data.data));
+        // dispatch(saveMessage(response.data.data));
         setTimeout(() => {
           setMessage("");
           setOpenFile(false);
@@ -221,9 +227,16 @@ export default function Home(props) {
     }
   }
 
+  function hideShowList(e) {
+    setVisibleList(e);
+    setOpenedChat(false);
+    setReceivedUser("");
+    dispatch(showImage(false));
+  }
+
   return (
     <>
-      <Navbar />
+      <Navbar user={receivedUser} cancelChat={hideShowList.bind(this)} />
       <div className="flex h-screen pt-16">
         <div
           id="userList"
@@ -252,12 +265,23 @@ export default function Home(props) {
             ))}
           </InfiniteScroll>
         </div>
+
         {openedChat ? (
           <div className="mx-auto w-full relative bg-white chat-box">
             <ModalImage dataFile={files} openImage={openImage} />
+            <UploadFile
+              active={openFile}
+              selectFile={handleFile}
+              progress={progress}
+              loading={loading}
+              onSendMessage={typing.bind(this)}
+              dataMessage={message}
+              onCancel={(e) => setOpenFile(e)}
+              message={(e) => setMessage(e)}
+            />
             <ChatBox messages={dataMessages} name={name} />
             <div
-              className=" w-full h-15 bg-white shadow-lg border-t absolute"
+              className=" w-full h-15 bg-white shadow-lg border-t absolute rounded-b-lg"
               style={{ bottom: "0px" }}
             >
               <div className="flex">
@@ -269,12 +293,6 @@ export default function Home(props) {
                 >
                   <img src={Attach} className="h-5 w-5" />
                 </button>
-                <UploadFile
-                  active={openFile}
-                  selectFile={handleFile}
-                  progress={progress}
-                  loading={loading}
-                />
                 <input
                   type="text"
                   onKeyPress={typing}

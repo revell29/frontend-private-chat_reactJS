@@ -12,7 +12,7 @@ function ChatBox({ messages, name }) {
         useAtBottom={true}
         useMode="bottom"
       >
-        <div className="pb-2 chat-box">
+        <div className="pb-2 pt-2 chat-box">
           {messages.map((message, i) => (
             <div key={i} className="chat-box">
               <BoxMessage message={message} name={name} number={i} />

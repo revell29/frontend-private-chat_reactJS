@@ -16,7 +16,7 @@ function BoxMessage({
     return (
       <div className="sm:mx-auto md:mx-10 lg:mx-20 xl:mx-24">
         <div className="clearfix">
-          <div className="bg-green-300 float-right mx-4 my-2 p-2 rounded-lg clearfix">
+          <div className="bg-indigo-500 float-right mx-4 my-2 p-2 rounded-lg clearfix text-white">
             {files !== undefined ? (
               <FileType dataFile={files} text={message} />
             ) : null}
@@ -26,7 +26,7 @@ function BoxMessage({
             >
               {message}
             </p>
-            <small className="text-gray-800" style={styleText}>
+            <small className="text-gray-200" style={styleText}>
               {moment(createdAt).format("d/m/Y H:m")}
             </small>
           </div>
@@ -35,7 +35,7 @@ function BoxMessage({
     );
   } else if (name === to.trim()) {
     return (
-      <div className=" sm:mx-auto md:mx-10 lg:mx-20 xl:mx-24">
+      <div className="sm:mx-auto md:mx-10 lg:mx-20 xl:mx-24">
         <div className="clearfix">
           <div className="bg-gray-300 float-left mx-4 my-2 p-2 rounded-lg">
             {files !== undefined ? (

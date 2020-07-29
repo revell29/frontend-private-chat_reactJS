@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { setStorage } from "../utils/helpers";
@@ -9,7 +8,6 @@ function Login() {
   const [data, setData] = useState({});
   const [auth, isAuth] = useState(false);
   const [errMessage, setMessage] = useState("");
-  const dispatch = useDispatch();
 
   const login = async (e) => {
     e.preventDefault();

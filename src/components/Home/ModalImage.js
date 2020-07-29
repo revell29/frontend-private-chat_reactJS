@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useDispatch } from "react-redux";
 import { showImage } from "../../redux/action";
 import VideoPlayer from "simple-react-video-thumbnail";
 

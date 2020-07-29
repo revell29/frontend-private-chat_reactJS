@@ -1,10 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import ScrollToBottom from "react-scroll-to-bottom";
 import BoxMessage from "./BoxMessage";
 import "./ChatBox.css";
 
 function ChatBox({ messages, name }) {
-  const divRef = useRef(null);
   if (messages.length > 0) {
     return (
       <ScrollToBottom

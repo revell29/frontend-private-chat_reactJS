@@ -4,7 +4,6 @@ import ClipLoader from "react-spinners/ClipLoader";
 
 export default function UploadFile({ selectFile, active, progress, loading }) {
   const [thumbnail, setThumbnail] = useState("");
-  const [filesize, setFile] = useState("");
 
   useEffect(() => {
     if (!active) {

@@ -1,14 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable jsx-a11y/alt-text */
-import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
-import VideoPlayer from 'simple-react-video-thumbnail';
-import { showImage } from '../../redux/action';
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { showImage } from "../../redux/action";
+import VideoPlayer from "simple-react-video-thumbnail";
 
 function ModalImage({ dataFile, openImage }) {
   const stylesModal = {
-    display: openImage ? 'block' : 'none',
-    zIndex: '5',
+    display: openImage ? "block" : "none",
+    zIndex: "5",
   };
 
   const dispatch = useDispatch();
@@ -20,28 +20,35 @@ function ModalImage({ dataFile, openImage }) {
   };
 
   useEffect(() => {
-    document.addEventListener('keydown', exitModal, false);
+    document.addEventListener("keydown", exitModal, false);
     return () => {
-      document.removeEventListener('keydown', exitModal, false);
+      document.removeEventListener("keydown", exitModal, false);
     };
   }, []);
 
   const renderFile = () => {
     if (dataFile.url !== undefined) {
       let urlFile;
-      const fileType = dataFile.url.split('.').pop();
+      let fileType = dataFile.url.split(".").pop();
       urlFile = `${process.env.REACT_APP_SOCKET_URL}/uploads/messages/${dataFile.url}`;
-      if (fileType === 'mp4' || fileType === 'mov') {
+      if (fileType === "mp4" || fileType === "mov") {
         return <VideoPlayer videoUrl={urlFile} snapsotAt={10} />;
+      } else {
+        return (
+          <img
+            src={urlFile}
+            className="absolute max-h-full max-w-full object-cover p-20"
+          />
+        );
       }
-      return <img src={urlFile} className="absolute max-h-full max-w-full object-cover p-20" />;
     }
   };
 
   return (
     <div className={` h-full w-full absolute`} style={stylesModal}>
-      <div className="bg-white h-full w-full absolute" />
+      <div className="bg-white h-full w-full absolute"></div>
       <div className="items-center w-full absolute justify-between px-5 mt-20 flex">
+        <button className=""></button>
         <button
           type="button"
           className="p-3 focus:outline-none"
@@ -53,7 +60,7 @@ function ModalImage({ dataFile, openImage }) {
       <div className="h-full w-full">
         <div className="h-full w-full overflow-auto">
           <div className="flex items-center justify-center h-full p-20">
-            {dataFile.url !== undefined ? renderFile() : ''}
+            {dataFile.url !== undefined ? renderFile() : ""}
           </div>
         </div>
         <div className="bg-white bottom-0 absolute w-full">

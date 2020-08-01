@@ -38,9 +38,6 @@
         "build:tailwind": "postcss src/tailwind.css -o src/assets/tailwind.css",
         "watch:tailwind": "postcss -w src/tailwind.css -o src/assets/tailwind.css"
     },
-    "eslintConfig": {
-        "extends": "react-app"
-    },
     "browserslist": {
         "production": [
             ">0.2%",

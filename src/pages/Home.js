@@ -8,7 +8,7 @@ import axios from "axios";
 import SocketIo from "socket.io-client";
 import ChatBox from "../components/Home/ChatBox";
 import DefaultChat from "../assets/DefaultChat.svg";
-import Attach from "../assets/attach.svg";
+import Emoji from "../assets/emoji.svg";
 import { WebNotif } from "../utils/Notification";
 import Navbar from "../components/Home/Navbar";
 import UploadFile from "../components/Home/UploadFile";
@@ -19,7 +19,7 @@ import { showImage, switchConversation, saveMessage } from "../redux/action";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { getUserList } from "../utils/service";
 import BeatLoader from "react-spinners/BeatLoader";
-
+import EmojiModal from "../components/Chat/EmojiModal";
 let socket;
 
 export default function Home(props) {
@@ -44,6 +44,7 @@ export default function Home(props) {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [visibleList, setVisibleList] = useState(true);
+  const [openEmoji, setOpenEmoji] = useState(false);
 
   async function createRoom(from, to) {
     await dispatch(showImage(false));
@@ -82,6 +83,7 @@ export default function Home(props) {
     setSelectUser(id);
     setOpenFile(false);
     setOpenedChat(true);
+    setOpenEmoji(false);
     setActiveIndex(key);
     setReceivedUser(username);
     const checkUser = roomChat.find((i) => i.user_id === id);
@@ -236,13 +238,20 @@ export default function Home(props) {
 
   return (
     <>
-      <Navbar user={receivedUser} cancelChat={hideShowList.bind(this)} />
-      <div className="flex h-screen pt-16">
+      <div className="flex h-screen">
         <div
           id="userList"
-          className="w-2/5 bg-white border-r border-b h-full user-list"
-          style={{ overflow: "auto" }}
+          className="bg-white border-r border-b h-full user-list"
+          style={{ overflow: "auto", minWidth: "350px", maxWidth: "480px" }}
         >
+          <Navbar user={name} cancelChat={hideShowList.bind(this)} />
+          <div className="mx-3 my-2">
+            <input
+              className="p-2 px-5 bg-gray-200 rounded-full flex-none w-full focus:outline-none"
+              placeholder="Search user"
+            />
+          </div>
+
           <InfiniteScroll
             dataLength={dataUser.length}
             next={getUser}
@@ -279,6 +288,7 @@ export default function Home(props) {
               onCancel={(e) => setOpenFile(e)}
               message={(e) => setMessage(e)}
             />
+            <EmojiModal openEmoji={openEmoji} />
             <ChatBox messages={dataMessages} name={name} />
             <div
               className=" w-full h-15 bg-white shadow-lg border-t absolute rounded-b-lg"
@@ -291,7 +301,23 @@ export default function Home(props) {
                     openFile ? setOpenFile(false) : setOpenFile(true)
                   }
                 >
-                  <img src={Attach} className="h-5 w-5" />
+                  <svg
+                    className="_7oal"
+                    height="24"
+                    width="24"
+                    viewBox="0 0 24 24"
+                  >
+                    <g fill="none" fillRule="evenodd">
+                      <polygon points="-6,30 30,30 30,-6 -6,-6 "></polygon>
+                      <path
+                        d="m18,11l-5,0l0,-5c0,-0.552 -0.448,-1 -1,-1c-0.5525,0 -1,0.448 -1,1l0,5l-5,0c-0.5525,0 -1,0.448 -1,1c0,0.552 0.4475,1 1,1l5,0l0,5c0,0.552 0.4475,1 1,1c0.552,0 1,-0.448 1,-1l0,-5l5,0c0.552,0 1,-0.448 1,-1c0,-0.552 -0.448,-1 -1,-1m-6,13c-6.6275,0 -12,-5.3725 -12,-12c0,-6.6275 5.3725,-12 12,-12c6.627,0 12,5.3725 12,12c0,6.6275 -5.373,12 -12,12"
+                        style={{ fill: "rgb(0, 153, 255)" }}
+                      ></path>
+                    </g>
+                  </svg>
+                </button>
+                <button className="ml-4 focus:outline-none">
+                  <img src={Emoji} />
                 </button>
                 <input
                   type="text"

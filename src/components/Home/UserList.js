@@ -4,7 +4,7 @@ import Avatar from "react-avatar";
 function UserList({ item, number, activeIndex, userClick }) {
   return (
     <div
-      className={`flex flex-start border-b items-center p-5 w-full cursor-pointer ${
+      className={`flex flex-start items-center p-2 mt-2 w-full cursor-pointer ${
         activeIndex === number ? "bg-gray-300" : null
       }`}
       key={item.id}
@@ -18,7 +18,7 @@ function UserList({ item, number, activeIndex, userClick }) {
       />
       <div className="flex flex-col ml-4">
         <div className="w-full">{item.username}</div>
-        {/* <small>Online</small> */}
+        <small>Online</small>
       </div>
     </div>
   );

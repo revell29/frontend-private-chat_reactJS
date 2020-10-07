@@ -45,7 +45,7 @@ function ModalImage({ dataFile, openImage }) {
   };
 
   return (
-    <div className={` h-full w-full absolute`} style={stylesModal}>
+    <div className={` h-screen w-full absolute`} style={stylesModal}>
       <div className="bg-white h-full w-full absolute"></div>
       <div className="items-center w-full absolute justify-between px-5 mt-20 flex">
         <button className=""></button>
@@ -57,7 +57,7 @@ function ModalImage({ dataFile, openImage }) {
           X
         </button>
       </div>
-      <div className="h-full w-full">
+      <div className="h-screen w-full">
         <div className="h-full w-full overflow-auto">
           <div className="flex items-center justify-center h-full p-20">
             {dataFile.url !== undefined ? renderFile() : ""}

@@ -60,8 +60,13 @@ function ChatBox({ messages, name }) {
         useAtBottom={true}
         useMode="bottom"
       >
-        <div className="pb-2 chat-box">
-          <h5>Chat Empty</h5>
+        <div className="flex justify-center align-bottom absolute w-full bottom-0 mb-5">
+          <div
+            className="p-2 px-5 rounded-full"
+            style={{ backgroundColor: "#E2F3FB" }}
+          >
+            <h5 className="bottom-0 bg-">Start chat</h5>
+          </div>
         </div>
       </ScrollToBottom>
     );

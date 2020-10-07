@@ -3,7 +3,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/style-prop-object */
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import SocketIo from "socket.io-client";
 import ChatBox from "../components/Home/ChatBox";
@@ -45,6 +45,7 @@ export default function Home(props) {
   const [progress, setProgress] = useState(0);
   const [visibleList, setVisibleList] = useState(true);
   const [openEmoji, setOpenEmoji] = useState(false);
+  const inputRef = useRef(null);
 
   async function createRoom(from, to) {
     await dispatch(showImage(false));
@@ -239,9 +240,19 @@ export default function Home(props) {
   return (
     <>
       <div className="flex h-screen">
+        <UploadFile
+          active={openFile}
+          selectFile={handleFile}
+          progress={progress}
+          loading={loading}
+          onSendMessage={typing.bind(this)}
+          dataMessage={message}
+          onCancel={(e) => setOpenFile(e)}
+          message={(e) => setMessage(e)}
+        />
         <div
           id="userList"
-          className="bg-white border-r border-b h-full user-list"
+          className="bg-white border-r border-b h-full user-list hidden md:block"
           style={{ overflow: "auto", minWidth: "350px", maxWidth: "480px" }}
         >
           <Navbar user={name} cancelChat={hideShowList.bind(this)} />
@@ -278,17 +289,13 @@ export default function Home(props) {
         {openedChat ? (
           <div className="mx-auto w-full relative bg-white chat-box">
             <ModalImage dataFile={files} openImage={openImage} />
-            <UploadFile
-              active={openFile}
-              selectFile={handleFile}
-              progress={progress}
-              loading={loading}
-              onSendMessage={typing.bind(this)}
-              dataMessage={message}
-              onCancel={(e) => setOpenFile(e)}
-              message={(e) => setMessage(e)}
+            <EmojiModal
+              openEmoji={openEmoji}
+              message={(e) => {
+                setMessage((prevState) => prevState.concat(" " + e + "  "));
+                inputRef.current.focus();
+              }}
             />
-            <EmojiModal openEmoji={openEmoji} />
             <ChatBox messages={dataMessages} name={name} />
             <div
               className=" w-full h-15 bg-white shadow-lg border-t absolute rounded-b-lg"
@@ -316,7 +323,10 @@ export default function Home(props) {
                     </g>
                   </svg>
                 </button>
-                <button className="ml-4 focus:outline-none">
+                <button
+                  className="ml-4 focus:outline-none"
+                  onClick={() => setOpenEmoji((prevState) => !prevState)}
+                >
                   <img src={Emoji} />
                 </button>
                 <input
@@ -324,6 +334,8 @@ export default function Home(props) {
                   onKeyPress={typing}
                   name="message"
                   value={message}
+                  ref={inputRef}
+                  autoFocus={true}
                   onChange={({ target: { value } }) => setMessage(value)}
                   className="focus:outline-none w-full m-2 h-10 px-4 mr-2 rounded-full border border-gray-300 bg-gray-200 resize-none text-sm"
                   placeholder="Type a message"

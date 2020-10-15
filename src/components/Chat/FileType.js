@@ -51,6 +51,7 @@ export default function FileType({ dataFile, text }) {
       case "pdf":
       case "zip":
       case "rar":
+      case "csv":
       case "gzip":
       case "xls":
       case "xlxs":
@@ -59,10 +60,10 @@ export default function FileType({ dataFile, text }) {
           <div className="flex items-center">
             <img
               src={DocsIcon}
-              className="w-10 h-10 object-cover cursor-pointer"
+              className="w-10 h-10 object-cover cursor-pointer text-white"
             />
-            <div className="flex flex-col">
-              <label className="ml-3 text-sm text-gray-900">{dataFile}</label>
+            <div className="flex flex-col text-white">
+              <label className="ml-3 text-sm">{dataFile}</label>
               <a
                 href={urlFile}
                 className="ml-3 text-sm cursor-pointer"
@@ -74,13 +75,36 @@ export default function FileType({ dataFile, text }) {
           </div>
         );
 
-      default:
+      case "jpg":
+      case "png":
+      case "jpeg":
+      case "svg":
         return (
           <img
             src={`${urlFile}`}
             className="w-48 h-48 object-cover cursor-pointer"
             onClick={(e) => openModal(e)}
           />
+        );
+
+      default:
+        return (
+          <div className="flex items-center">
+            <img
+              src={DocsIcon}
+              className="w-10 h-10 object-cover cursor-pointer"
+            />
+            <div className="flex flex-col">
+              <label className="ml-3 text-sm text-white">{dataFile}</label>
+              <a
+                href={urlFile}
+                className="ml-3 text-sm cursor-pointer"
+                style={{ fontSize: "10px" }}
+              >
+                Unduh
+              </a>
+            </div>
+          </div>
         );
     }
   }

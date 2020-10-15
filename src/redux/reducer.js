@@ -9,6 +9,7 @@ const initialState = {
   user: user ? user.data : {},
   room_chat: [],
   message: [],
+  hideList: true,
 };
 
 const reducer = (state = initialState, action) => {
@@ -34,6 +35,11 @@ const reducer = (state = initialState, action) => {
       return {
         ...state,
         message: state.message.concat(action.payload),
+      };
+    case "HIDE_CHAT_LIST":
+      return {
+        ...state,
+        hideList: action.payload,
       };
     default:
       return state;

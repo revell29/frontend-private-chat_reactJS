@@ -10,7 +10,6 @@ import Register from "./pages/Register";
 import Home from "./pages/Home";
 import Index from "./pages";
 import { getStorage } from "./utils/helpers";
-import Navbar from "./components/Home/Navbar";
 
 function App() {
   const isAuthenticated = getStorage("login");

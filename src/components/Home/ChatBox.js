@@ -1,10 +1,11 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import ScrollToBottom from "react-scroll-to-bottom";
 import BoxMessage from "./BoxMessage";
 import "./ChatBox.css";
 import _ from "underscore";
 import moment from "moment";
 function ChatBox({ messages, name }) {
+
   const messageGroup = _.groupBy(messages, function (item) {
     return moment(item.createdAt).calendar(null, {
       sameDay: "[Today]",

@@ -14,8 +14,10 @@ export default function UploadFile({
   onCancel,
 }) {
   const [thumbnail, setThumbnail] = useState("");
+
   const [filename, setFilename] = useState("");
   const [fileType, setFileType] = useState("");
+
   useEffect(() => {
     if (!active) {
       setThumbnail("");

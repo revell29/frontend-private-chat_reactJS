@@ -7,7 +7,7 @@ This is project Frontend for [Chat Engine](https://github.com/revell29/chat-engi
 - Clone this repository
 - change .env and change API URL to API URL chat engine
 - run `yarn` or `npm install`
-- then run `yarn start`
+- then run `yarn start` or `npm start`
 
 ## To Do List
 
